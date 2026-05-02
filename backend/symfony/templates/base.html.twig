@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Serenity Neural | Symfony Edition{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2290%22>🧠</text></svg>">
+        {% block stylesheets %}
+            {# Link to your Vite/Tailwind build here #}
+        {% endblock %}
+
+        {% block javascripts %}
+            {# Link to your Vite/React entry point here #}
+        {% endblock %}
+    </head>
+    <body class="bg-[#0A0A1F] text-white">
+        <div id="root"></div>
+        {% block body %}{% endblock %}
+    </body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "name": "MindCare AI+",
+  "description": "A clinical mental health management system featuring patient/therapist portals, Gemini AI-powered journal analysis, and automated mood tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

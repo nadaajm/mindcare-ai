@@ -1,0 +1,171 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "System users including patients, therapists, and admins.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["patient", "therapist", "admin"] },
+        "photoUrl": { "type": "string" },
+        "specialty": { "type": "string" },
+        "bio": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "displayName", "role"]
+    },
+    "Journal": {
+      "title": "Journal",
+      "description": "Mental health journal entries analyzed by AI.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "content": { "type": "string" },
+        "sentiment": { "type": "string" },
+        "stressLevel": { "type": "integer" },
+        "happinessLevel": { "type": "integer" },
+        "anxietyLevel": { "type": "integer" },
+        "aiAdvice": { "type": "string" },
+        "isCrisis": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "content"]
+    },
+    "Emotion": {
+      "title": "Emotion",
+      "description": "Point-in-time emotion tracking metrics.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "stressLevel": { "type": "integer" },
+        "happinessLevel": { "type": "integer" },
+        "anxietyLevel": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "stressLevel", "happinessLevel", "anxietyLevel"]
+    },
+    "Appointment": {
+      "title": "Appointment",
+      "description": "Scheduled therapy sessions.",
+      "type": "object",
+      "properties": {
+        "patientId": { "type": "string" },
+        "therapistId": { "type": "string" },
+        "startTime": { "type": "string", "format": "date-time" },
+        "endTime": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["scheduled", "completed", "cancelled"] },
+        "type": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["patientId", "therapistId", "startTime", "endTime"]
+    },
+    "Payment": {
+      "title": "Payment",
+      "description": "Payment records for sessions.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "therapistId": { "type": "string" },
+        "appointmentId": { "type": "string" },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "completed", "failed"] },
+        "stripeId": { "type": "string" },
+        "invoiceUrl": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "therapistId", "amount", "status"]
+    },
+    "Alert": {
+      "title": "Alert",
+      "description": "System alerts and notifications.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "type": { "type": "string" },
+        "message": { "type": "string" },
+        "isRead": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["message"]
+    },
+    "Recommendation": {
+      "title": "Recommendation",
+      "description": "System-wide mental health recommendations.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "type": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "content"]
+    },
+    "Insight": {
+      "title": "Insight",
+      "description": "AI-generated summaries and trend analysis for users.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "summary": { "type": "string" },
+        "trend": { "type": "string" },
+        "recommendations": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "summary"]
+    },
+    "CommunityPost": {
+      "title": "CommunityPost",
+      "description": "Public broadcasts or shared reflections.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "content": { "type": "string" },
+        "likes": { "type": "integer" },
+        "isPublic": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["content", "authorName"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Profiles for all system users."
+    },
+    "/journals/{journalId}": {
+      "schema": "Journal",
+      "description": "User journal entries."
+    },
+    "/emotions/{emotionId}": {
+      "schema": "Emotion",
+      "description": "Individual mood tracking data points."
+    },
+    "/appointments/{appointmentId}": {
+      "schema": "Appointment",
+      "description": "Therapy appointment scheduling."
+    },
+    "/payments/{paymentId}": {
+      "schema": "Payment",
+      "description": "Billing and payment records."
+    },
+    "/alerts/{alertId}": {
+      "schema": "Alert",
+      "description": "System-wide notifications and crisis alerts."
+    },
+    "/recommendations/{recommendationId}": {
+      "schema": "Recommendation",
+      "description": "Mental health tips and recommendations."
+    },
+    "/insights/{insightId}": {
+      "schema": "Insight",
+      "description": "AI-generated user summaries."
+    },
+    "/community_posts/{postId}": {
+      "schema": "CommunityPost",
+      "description": "Public community shared thoughts."
+    }
+  }
+}

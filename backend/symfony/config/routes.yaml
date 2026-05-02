@@ -1,0 +1,8 @@
+controllers:
+    resource: ../src/Controller/
+    type: attribute
+
+# Custom API Routing
+api_v1:
+    path: /api/v1
+    controller: App\Controller\NeuralKernelController
