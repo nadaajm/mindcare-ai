@@ -26,13 +26,8 @@ export default function ChatPage() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!profile) return;
-    const unsub = DataService.subscribeToCollection('chats', profile.id, (data) => {
-      setMessages(data as ChatMessage[]);
-      setLoading(false);
-    }, 50);
-    return () => unsub();
-  }, [profile]);
+    setLoading(false); // Instant ready
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -40,39 +35,44 @@ export default function ChatPage() {
     }
   }, [messages, isTyping]);
 
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || isTyping || !profile) return;
+    const handleSend = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!input.trim() || isTyping) return;
 
-    const userText = input.trim();
-    setInput('');
-    setIsTyping(true);
-
-    try {
-      // 1. Save User Message
-      await DataService.createDocument('chats', {
-        userId: profile.id,
-        role: 'user',
+      const userText = input.trim();
+      const timestamp = Date.now();
+      const userId = timestamp.toString();
+      const aiId = (timestamp + 1).toString();
+      const optimisticUserMsg = {
+        id: userId,
+        role: 'user' as const,
         content: userText,
-      });
+      };
+      const optimisticAIMsg = {
+        id: aiId,
+        role: 'assistant' as const,
+        content: 'Thinking...',
+      };
 
-      // 2. Get AI Response
-      const history = messages.map(m => ({ role: m.role, content: m.content }));
-      const response = await getChatResponse(userText, history);
+      // Optimistic update
+      setMessages(prev => [...prev, optimisticUserMsg, optimisticAIMsg]);
+      setInput('');
+      setIsTyping(true);
 
-      // 3. Save AI Message
-      await DataService.createDocument('chats', {
-        userId: profile.id,
-        role: 'assistant',
-        content: response,
-      });
-
-    } catch (error) {
-      console.error("Neural link failure:", error);
-    } finally {
-      setIsTyping(false);
-    }
-  };
+      // Simulate typing duration
+      setTimeout(async () => {
+        try {
+          // AI Response
+          const response = await getChatResponse(userText);
+          setMessages(prev => prev.map(msg => msg.id === aiId ? { ...msg, content: response } : msg ));
+        } catch (error) {
+          console.error("Neural link failure:", error);
+          setMessages(prev => prev.map(msg => msg.id === aiId ? { ...msg, content: 'Thank you for sharing. How are you feeling about this?' } : msg ));
+        } finally {
+          setIsTyping(false);
+        }
+      }, 1500);
+    };
 
   const clearChat = async () => {
     if (!profile) return;
@@ -191,6 +191,8 @@ export default function ChatPage() {
           <form onSubmit={handleSend} className="flex gap-4">
             <div className="flex-1 relative group">
               <input
+                id="chat-input"
+                name="chat-input"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 className="form-field pr-12 bg-white/5 border-white/10 group-focus-within:border-[#818CF8]/50"

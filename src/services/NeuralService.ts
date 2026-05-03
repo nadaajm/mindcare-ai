@@ -1,6 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+import { getChatResponse, isAIAvailable } from '../lib/ai';
 
 export class NeuralService {
   static async generateJournalPrompt(role: string) {
@@ -9,12 +7,8 @@ export class NeuralService {
       The user is categorized as a "${role}". Keep it under 15 words.
       Return JSON: { "prompt": "..." }`;
 
-      const result = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: promptText,
-        config: { responseMimeType: "application/json" }
-      });
-      return JSON.parse(result.text).prompt;
+      const result = await getChatResponse(promptText);
+      return JSON.parse(result).prompt;
     } catch (error) {
       console.error("Neural prompt failure:", error);
       return "Transcribe your current mental state...";
@@ -28,12 +22,8 @@ export class NeuralService {
       Generate 3 specific, professional, and slightly futuristic wellness "protocols" (tasks) for today.
       Return JSON: { "protocols": [ { "id": "1", "title": "...", "description": "...", "type": "meditation" | "activity" | "social" } ] }`;
 
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: prompt,
-        config: { responseMimeType: "application/json" }
-      });
-      return JSON.parse(response.text).protocols;
+      const response = await getChatResponse(prompt);
+      return JSON.parse(response).protocols;
     } catch (error) {
       console.error("Protocol generation failure:", error);
       return [];
@@ -47,14 +37,11 @@ export class NeuralService {
       Describe this constellation as if it were a cosmic event or a neural landscape.
       Return JSON: { "title": "...", "analysis": "..." }`;
 
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: prompt,
-        config: { responseMimeType: "application/json" }
-      });
-      return JSON.parse(response.text);
+      const response = await getChatResponse(prompt);
+      return JSON.parse(response);
     } catch (error) {
        return { title: "Equilibrium", analysis: "Steady state detected." };
     }
   }
 }
+

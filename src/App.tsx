@@ -61,7 +61,7 @@ export default function App() {
             <PrivateRoute roles={['patient', 'therapist']}><Journal /></PrivateRoute>
           } />
           <Route path="/chat" element={
-            <PrivateRoute roles={['patient']}><Chat /></PrivateRoute>
+            <PrivateRoute><Chat /></PrivateRoute>
           } />
           <Route path="/insights" element={
             <PrivateRoute roles={['patient']}><Insights /></PrivateRoute>

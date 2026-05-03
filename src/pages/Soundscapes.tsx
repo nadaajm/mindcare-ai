@@ -51,6 +51,28 @@ export default function Soundscapes() {
 
   const currentSound = SOUNDSCAPES.find(s => s.id === playing) || SOUNDSCAPES[0];
 
+  const frequencies = {
+    '1': 432,  // Solaris
+    '2': 528,  // Forest
+    '3': 396,  // Rain
+    '4': 741,  // Ocean
+    '5': 369   // Zen
+  };
+
+  useEffect(() => {
+    if (playing) {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      oscillator.frequency.setValueAtTime(frequencies[playing as keyof typeof frequencies] || 432, audioContext.currentTime);
+      gainNode.gain.setValueAtTime(volume / 100 * 0.1, audioContext.currentTime);
+      oscillator.start();
+      return () => oscillator.stop();
+    }
+  }, [playing, volume]);
+
   return (
     <div className="space-y-12 animate-in fade-in duration-1000">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">

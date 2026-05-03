@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import cors from 'cors';
 import { fileURLToPath } from "url";
 import { createServer as createViteServer } from "vite";
 import { NeuralKernelController } from "./src/server/Controllers/NeuralKernelController";
@@ -12,7 +13,9 @@ const __dirname = path.dirname(__filename);
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  app.use(cors());
+  app.use(express.json());
+  const PORT = 3001;
 
   app.use(express.json());
 

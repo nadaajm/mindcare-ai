@@ -124,7 +124,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="main-bg flex min-h-screen">
       {/* Desktop Sidebar */}
-      <aside className="sidebar hidden lg:flex">
+      <aside className="sidebar w-72 fixed left-0 top-0 h-full z-30 bg-[#0A0A1F]/90 backdrop-blur-xl border-r border-white/5 lg:flex md:block">
         <div className="p-8">
           <div className="flex items-center gap-3 mb-12">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#818CF8] to-[#6366F1] flex items-center justify-center shadow-lg shadow-indigo-500/20">

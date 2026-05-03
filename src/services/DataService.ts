@@ -53,7 +53,8 @@ export class DataService {
 
   static async createDocument(path: string, data: any) {
     try {
-      const key = this.getStorageKey(path, data.userId || 'default');
+      const uid = data.userId || 'demo-user';
+      const key = this.getStorageKey(path, uid);
       const stored = localStorage.getItem(key);
       let existing: any[] = [];
       

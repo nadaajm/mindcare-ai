@@ -46,7 +46,7 @@ export class UserController {
       }
       
       const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
-      const userId = crypto.randomUUID();
+      const userId = 'demo-user'; // Fixed for demo
       
       pool.query(
         'INSERT INTO users (id, email, password, display_name, role) VALUES (?, ?, ?, ?, ?)',
@@ -94,7 +94,7 @@ export class UserController {
         const user = users[0];
         res.json({
           success: true,
-          user: { id: user.id, email: user.email, displayName: user.display_name, role: user.role, avatarUrl: user.avatar_url }
+          user: { id: 'demo-user', email: user.email, displayName: user.display_name, role: user.role, avatarUrl: user.avatar_url }
         });
       }
     );
@@ -103,11 +103,10 @@ export class UserController {
   public static createTestUser(req: Request, res: Response) {
     const pool = getPool();
     const hashedPassword = crypto.createHash('sha256').update('test123').digest('hex');
-    const userId = crypto.randomUUID();
+    const userId = 'demo-user';
     
     pool.query(
       'INSERT IGNORE INTO users (id, email, password, display_name, role) VALUES (?, ?, ?, ?, ?)',
-      [userId, 'test@test.com', hashedPassword, 'Test User', 'patient'],
       (err) => {
         if (err) {
           console.error('Test user error:', err);
