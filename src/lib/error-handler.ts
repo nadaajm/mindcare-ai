@@ -1,4 +1,5 @@
-import { getAuthInstance } from './firebase';
+// import { getAuthInstance } from './firebase';
+export const getAuthInstance = () => null;
 
 export enum OperationType {
   CREATE = 'create',

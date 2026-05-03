@@ -190,6 +190,12 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
             <SidebarItem
               icon={User}
+              label="Account"
+              active={location.pathname === '/accounts'}
+              onClick={() => navigate('/accounts')}
+            />
+            <SidebarItem
+              icon={User}
               label="Account Sync"
               active={location.pathname === '/profile'}
               onClick={() => navigate('/profile')}
@@ -416,6 +422,15 @@ export function Shell({ children }: { children: React.ReactNode }) {
               </nav>
               
               <div className="mt-auto pt-6 border-t border-white/5 space-y-1">
+                 <SidebarItem
+                  icon={User}
+                  label="Account"
+                  active={location.pathname === '/accounts'}
+                  onClick={() => {
+                    navigate('/accounts');
+                    setIsMobileMenuOpen(false);
+                  }}
+                />
                 <SidebarItem
                   icon={User}
                   label="Account Sync"

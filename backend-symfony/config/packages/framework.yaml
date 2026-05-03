@@ -1,0 +1,21 @@
+backend-symfony/config/packages/framework.yaml
+framework:
+    secret: '%env(APP_SECRET)%'
+    http_method_override: true
+    handle_all_throwables: true
+    runtime: Symfony\Component\Dotenv\Dotenv
+    
+    error_controller: null
+    
+    property_access:
+        enable_call_constructor: true
+    
+    cache:
+        pools:
+            cache.app:
+                adapter: cache.adapter.filesystem
+            cache.system:
+                adapter: cache.adapter.filesystem
+
+    php_errors:
+        log: true

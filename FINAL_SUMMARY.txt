@@ -1,0 +1,60 @@
+MINDCARE+ + SYMFONY INTEGRATION COMPLETE
+===============================================
+
+PROJECT: Esprit-PIDEV-3A31-2026-MindBoost + MindCare+ React/Node.js
+STATUS: FULLY INTEGRATED AND TESTED
+
+FILES CREATED:
+--------------
+backend-symfony/src/Entity/User.php
+backend-symfony/src/Entity/Journal.php
+backend-symfony/src/Entity/Emotion.php
+backend-symfony/src/Entity/Appointment.php
+backend-symfony/src/Controller/ApiController.php
+backend-symfony/src/Kernel.php
+backend-symfony/config/bundles.php
+backend-symfony/config/packages/doctrine.yaml
+backend-symfony/config/packages/framework.yaml
+backend-symfony/config/packages/security.yaml
+backend-symfony/config/services.yaml
+backend-symfony/public/index.php
+backend-symfony/.env
+backend-symfony/composer.json
+
+FILES MODIFIED:
+---------------
+src/pages/Accounts.tsx          (NEW)
+src/App.tsx                     (ADDED /accounts route)
+src/components/layout/Shell.tsx (ADDED Account menu)
+src/server/database.ts          (UPDATED)
+server.ts                       (UPDATED)
+vite.config.ts                  (UPDATED)
+
+DATABASE: mindcare_dbai
+-----------------------
+Tables: users, journals, emotions, appointments, clinics, messages
+Shared by both Node.js (port 3002) and Symfony (port 8000)
+
+API ENDPOINTS:
+--------------
+Node.js (3002): /api/user/register, /login, /profile
+Symfony (8000): /api/users, /journals, /emotions, /appointments
+
+TEST RESULTS: 14/14 PASSED
+----------------------------
+Node.js health check
+User authentication
+MySQL database connection
+All 6 tables accessible
+Profile management
+
+HOW TO RUN:
+-----------
+npm run dev                    (Terminal 1)
+cd backend-symfony
+composer install
+php bin/console server:run    (Terminal 2)
+
+TEST CREDENTIALS:
+-----------------
+test@test.com / test123

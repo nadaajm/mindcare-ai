@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Wind, Play, Pause, RefreshCw, Sparkles, ChevronLeft, Volume2, ShieldCheck } from 'lucide-react';
+import { Play, Pause, RefreshCw, Sparkles, ChevronLeft, ShieldCheck, Activity, Clock, TrendingUp } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { getDb, collection, addDoc, serverTimestamp, query, where, orderBy, limit, onSnapshot } from '../lib/firebase';
+import { OperationType, handleFirestoreError } from '../lib/error-handler';
 
 const PATTERNS = [
   { id: 'box', name: 'Neural Box', description: '4s In • 4s Hold • 4s Out • 4s Hold', duration: 16 },
@@ -10,12 +14,53 @@ const PATTERNS = [
   { id: 'calm', name: 'Coherence', description: '5s In • 5s Out', duration: 10 },
 ];
 
+interface FocusSession {
+  id: string;
+  userId: string;
+  patternId: string;
+  patternName: string;
+  duration: number; // seconds
+  startTime: number;
+  endTime: number;
+  createdAt: any;
+}
+
 export default function Focus() {
   const navigate = useNavigate();
+  const { profile } = useAuth();
+  const [sessions, setSessions] = useState<FocusSession[]>([]);
+  const [stats, setStats] = useState({ count: 0, avgDuration: 0, patternUsage: {} as Record<string, number> });
   const [isActive, setIsActive] = useState(false);
   const [selectedPattern, setSelectedPattern] = useState(PATTERNS[0]);
   const [phase, setPhase] = useState<'Inhale' | 'Hold' | 'Exhale' | 'Rest'>('Rest');
   const [timer, setTimer] = useState(0);
+  const [sessionStart, setSessionStart] = useState(0);
+  const startTimeRef = useRef(0);
+
+  // Load focus sessions stats
+  useEffect(() => {
+    if (!profile) return;
+    const _db = getDb();
+    const q = query(
+      collection(_db, 'focus_sessions'),
+      where('userId', '==', profile.id),
+      orderBy('createdAt', 'desc'),
+      limit(30)
+    );
+    const unsub = onSnapshot(q, (snap) => {
+      const data = snap.docs.map(d => ({ id: d.id, ...d.data() } as FocusSession));
+      setSessions(data);
+      const count = data.length;
+      const totalDur = data.reduce((sum, s) => sum + s.duration, 0);
+      const avgDur = count > 0 ? Math.round(totalDur / count / 60) : 0; // minutes
+      const usage = data.reduce((acc, s) => {
+        acc[s.patternId] = (acc[s.patternId] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+      setStats({ count, avgDuration: avgDur, patternUsage: usage });
+    }, (err) => handleFirestoreError(err, OperationType.LIST, 'focus_sessions'));
+    return unsub;
+  }, [profile]);
 
   useEffect(() => {
     let interval: any;
@@ -29,6 +74,30 @@ export default function Focus() {
       clearInterval(interval);
     }
     return () => clearInterval(interval);
+  }, [isActive]);
+
+  // Session tracking
+  useEffect(() => {
+    // Save session when stopping
+    if (!isActive && startTimeRef.current > 0) {
+      const dur = Date.now() - startTimeRef.current;
+      if (dur > 30 && profile?.id) { // min 30s session
+        const _db = getDb();
+        addDoc(collection(_db, 'focus_sessions'), {
+          userId: profile.id,
+          patternId: selectedPattern.id,
+          patternName: selectedPattern.name,
+          duration: dur / 1000,
+          startTime: startTimeRef.current,
+          endTime: Date.now(),
+          createdAt: serverTimestamp()
+        }).catch(err => console.error('Save session error:', err));
+      }
+      setSessionStart(0);
+      startTimeRef.current = 0;
+    } else if (isActive && startTimeRef.current === 0) {
+      startTimeRef.current = Date.now();
+    }
   }, [isActive]);
 
   // Pattern Logic for Neural Box (Example)
@@ -181,16 +250,33 @@ export default function Focus() {
             <div className="p-8 glass-card border-indigo-500/10 bg-indigo-500/5 space-y-6">
                 <div className="flex items-center gap-3">
                    <div className="w-1.5 h-1.5 rounded-full bg-[#818CF8]" />
-                   <h5 className="text-[10px] font-black uppercase tracking-widest text-white/60">Insight Extraction</h5>
+                   <h5 className="text-[10px] font-black uppercase tracking-widest text-white/60">Focus Statistiques</h5>
                 </div>
-                <p className="text-xs text-white/40 leading-relaxed italic">
-                   "Neural entrainment via rhythmic oscillation forces the prefrontal cortex into an alpha-dominant state, reducing autonomic stress signals."
-                </p>
-                <div className="flex items-center gap-4 pt-4 border-t border-white/5 opacity-40">
-                   <Volume2 size={14} className="text-white" />
-                   <div className="h-1 flex-1 bg-white/5 rounded-full">
-                      <div className="w-1/2 h-full bg-white opacity-40" />
-                   </div>
+                <div className="grid grid-cols-2 gap-4 mb-4 text-xs">
+                  <div className="text-center p-3 bg-white/5 rounded-lg">
+                    <div className="text-2xl font-bold text-[#34D399]">{stats.count}</div>
+                    <div className="text-white/60 uppercase tracking-wider text-[9px]">Sessions</div>
+                  </div>
+                  <div className="text-center p-3 bg-white/5 rounded-lg">
+                    <div className="text-2xl font-bold text-[#818CF8]">{stats.avgDuration}'</div>
+                    <div className="text-white/60 uppercase tracking-wider text-[9px]">Avg Duration</div>
+                  </div>
+                </div>
+                <div className="h-20">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={Object.entries(stats.patternUsage).map(([id, value]) => ({ name: id, value }))} 
+                           cx="50%" cy="50%" outerRadius={40} dataKey="value"
+                           fill="#818CF8">
+                        {Object.entries(stats.patternUsage).map((entry, i) => (
+                          <Cell key={i} fill={`hsl(${i * 100}, 70%, 60%)`} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="text-[10px] text-white/40 text-center">
+                  {stats.count === 0 ? 'Start your first session' : `${stats.count} entrainment cycles analyzed`}
                 </div>
             </div>
          </div>

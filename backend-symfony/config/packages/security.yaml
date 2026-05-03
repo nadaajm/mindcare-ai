@@ -1,0 +1,15 @@
+backend-symfony/config/packages/security.yaml
+security:
+    password_hashers:
+        App\Entity\User: 'auto'
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            lazy: true
+            security: false
+
+    access_control:
+        - { path: ^/api, roles: PUBLIC_ACCESS }

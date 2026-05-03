@@ -1,0 +1,22 @@
+api_platform:
+    title: 'MindCare API'
+    version: '1.0.0'
+    mapping:
+        paths: ['%kernel.project_dir%/src/Entity']
+    defaults:
+        stateless: true
+        cache_headers:
+            vary:
+                - 'Content-Type'
+                - 'Authorization'
+                - 'Origin'
+        pagination:
+            items_per_page_parameter_name: '_items_per_page'
+            client_items_per_page: true
+            maximum_items_per_page_parameter_name: '_maximum_items_per_page'
+    swagger:
+        api_keys:
+            apiKey: # JWT token
+                name: Authorization
+                type: header
+    oauth2: true

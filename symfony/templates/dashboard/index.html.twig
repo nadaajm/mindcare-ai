@@ -1,0 +1,95 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Dashboard - MindCare AI{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <h1><i class="fas fa-brain me-2"></i>Neural Dashboard</h1>
+    <p>AI-powered mental health insights and neural sync status.</p>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-number">{{ emotions|length }}</div>
+                    <div class="stat-label">Emotions Logged</div>
+                </div>
+                <i class="fas fa-heart fa-2x" style="color:#FF6B9D;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-number">{{ journals|length }}</div>
+                    <div class="stat-label">Journal Entries</div>
+                </div>
+                <i class="fas fa-book-open fa-2x" style="color:#4D83FF;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-number">{{ averageMood|number_format(1) }}</div>
+                    <div class="stat-label">Avg Mood Score</div>
+                </div>
+                <i class="fas fa-chart-line fa-2x" style="color:#00D1C7;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-number">{{ user.createdAt|ago }}</div>
+                    <div class="stat-label">Member Since</div>
+                </div>
+                <i class="fas fa-calendar-check fa-2x" style="color:#F7B84B;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <a href="{{ path('chat') }}" class="quick-card">
+            <i class="fas fa-comments fa-xl" style="color:#4D83FF;"></i>
+            <h5>AI Chat Conversation</h5>
+            <p>Connect with Lumina AI for real-time emotional support and cognitive therapy.</p>
+        </a>
+    </div>
+
+    <div class="col-lg-6">
+        <a href="{{ path('insights') }}" class="quick-card">
+            <i class="fas fa-chart-simple fa-xl" style="color:#19B5FE;"></i>
+            <h5>Neural Insights</h5>
+            <p>AI analysis of your emotional patterns and wellness trajectory.</p>
+        </a>
+    </div>
+
+    <div class="col-lg-6">
+        <a href="{{ path('journal') }}" class="quick-card">
+            <i class="fas fa-edit fa-xl" style="color:#00D1C7;"></i>
+            <h5>New Journal Entry</h5>
+            <p>Record thoughts for AI sentiment analysis and pattern recognition.</p>
+        </a>
+    </div>
+
+    <div class="col-lg-6">
+        <a href="{{ path('emotions') }}" class="quick-card">
+            <i class="fas fa-heart-pulse fa-xl" style="color:#F7B84B;"></i>
+            <h5>Log Emotion</h5>
+            <p>Quick mood tracking with intelligent categorization.</p>
+        </a>
+    </div>
+</div>
+{% endblock %}
+

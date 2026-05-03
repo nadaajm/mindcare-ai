@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, orderBy, limit, onSnapshot, addDoc, serverTimestamp, updateDoc, doc, increment } from '../lib/firebase';
-import { getDb } from '../lib/firebase';
+import { getDb, collection, query, where, orderBy, limit, onSnapshot, addDoc, serverTimestamp, doc, updateDoc, increment } from '../lib/firebase';
+import { OperationType, handleFirestoreError } from '../lib/error-handler';
 import { useAuth } from '../context/AuthContext';
 import { CommunityPost } from '../types';
-import { OperationType, handleFirestoreError } from '../lib/error-handler';
 import { 
   Users, 
   Heart, 
@@ -28,25 +27,30 @@ export default function Community() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!profile) {
+      setLoading(false);
+      return;
+    }
     const _db = getDb();
-    if (!_db) { setLoading(false); return; }
-    
     const q = query(
       collection(_db, 'community_posts'),
+      where('userId', '==', profile.id),
       orderBy('createdAt', 'desc'),
-      limit(20)
+      limit(50)
     );
-    
     const unsub = onSnapshot(q, (snap) => {
-      setPosts(snap.docs.map(d => ({ id: d.id, ...d.data() } as CommunityPost)));
+      console.log('Community posts snap:', snap.docs.length);
+      setPosts(snap.docs.map((d: any) => ({ id: d.id, ...d.data() } as CommunityPost)));
       setLoading(false);
     }, (error) => {
+      console.error('Community onSnapshot error:', error);
       handleFirestoreError(error, OperationType.LIST, 'community_posts');
+      handleFirestoreError(error, OperationType.LIST, 'community_posts');
+      setPosts([]);
       setLoading(false);
     });
-
-    return () => unsub();
-  }, []);
+    return unsub;
+  }, [profile]);
 
   const handlePost = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +59,6 @@ export default function Community() {
     setIsPosting(true);
     try {
       const _db = getDb();
-      if (!_db) throw new Error('Firebase not available');
       await addDoc(collection(_db, 'community_posts'), {
         userId: profile.id,
         authorName: profile.displayName || 'Anonymous User',
@@ -66,7 +69,8 @@ export default function Community() {
       });
       setNewPost('');
     } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, 'community_posts');
+      console.error('Post error:', error);
+      handleFirestoreError(error as Error, OperationType.CREATE, 'community_posts');
     } finally {
       setIsPosting(false);
     }
@@ -75,13 +79,11 @@ export default function Community() {
   const handleLike = async (postId: string) => {
     try {
       const _db = getDb();
-      if (!_db) return;
-      const postRef = doc(_db, 'community_posts', postId);
-      await updateDoc(postRef, {
-        likes: increment(1)
+      await updateDoc(doc(_db, 'community_posts', postId), { 
+        likes: increment(1) 
       });
     } catch (error) {
-      handleFirestoreError(error, OperationType.UPDATE, 'community_posts');
+      console.error('Like error:', error);
     }
   };
 
@@ -117,14 +119,19 @@ export default function Community() {
               <textarea 
                 value={newPost}
                 onChange={(e) => setNewPost(e.target.value)}
+                maxLength={500}
                 placeholder="Share a moment of clarity or a reflective question..."
                 className="bg-transparent text-white text-sm w-full outline-none resize-none pt-2 min-h-[80px]"
               />
             </div>
             <div className="flex items-center justify-between pt-4 border-t border-white/5">
               <div className="flex gap-4">
-                <button className="text-white/20 hover:text-white transition-colors"><Sparkles size={18} /></button>
-                <button className="text-white/20 hover:text-white transition-colors"><Plus size={18} /></button>
+                <button className="text-white/20 hover:text-white transition-colors" title="AI Enhance">
+                  <Sparkles size={18} />
+                </button>
+                <button className="text-white/20 hover:text-white transition-colors" title="Add Media">
+                  <Plus size={18} />
+                </button>
               </div>
               <button 
                 onClick={handlePost}

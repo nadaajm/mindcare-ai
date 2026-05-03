@@ -1,5 +1,14 @@
 [
   {
+    "id": "f65d9bd7-7edf-447e-9036-1cb2a2487079",
+    "email": "7d421742e8220be4fd61698494619a5f3c29fe9bd945bd1446ba4c2213efbd60",
+    "password": "hi",
+    "display_name": "patient",
+    "role": "patient",
+    "avatar_url": null,
+    "created_at": "2026-05-03T11:38:55.667Z"
+  },
+  {
     "id": "test-user-1",
     "email": "test@test.com",
     "password": "ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae",

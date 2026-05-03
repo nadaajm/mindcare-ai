@@ -45,8 +45,8 @@ export class UserController {
         return;
       }
       
-      const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
-      const userId = 'demo-user'; // Fixed for demo
+const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
+       const userId = `user-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
       
       pool.query(
         'INSERT INTO users (id, email, password, display_name, role) VALUES (?, ?, ?, ?, ?)',
@@ -107,6 +107,7 @@ export class UserController {
     
     pool.query(
       'INSERT IGNORE INTO users (id, email, password, display_name, role) VALUES (?, ?, ?, ?, ?)',
+      [userId, 'test@test.com', hashedPassword, 'Test User', 'patient'],
       (err) => {
         if (err) {
           console.error('Test user error:', err);

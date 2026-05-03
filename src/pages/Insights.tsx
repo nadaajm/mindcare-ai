@@ -28,8 +28,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { GoogleGenAI } from "@google/genai";
 import { cn } from '../lib/utils';
 import { OperationType, handleFirestoreError } from '../lib/error-handler';
-import { DataService } from '../services/DataService';
-
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 
 export default function Insights() {

@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <h1><i class="fas fa-sign-in-alt me-2"></i>Neural Sync Login</h1>
+    <p>Access your personal AI mental health companion.</p>
+</div>
+
+<form method="post" class="col-md-6">
+    {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+    <div class="mb-4">
+        <label for="inputEmail" class="form-label">Email</label>
+        <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+    </div>
+
+    <div class="mb-4">
+        <label for="inputPassword" class="form-label">Password</label>
+        <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+    </div>
+
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+    <div class="d-flex justify-content-between align-items-center">
+        <a href="{{ path('app_register') }}">New user? Register</a>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-arrow-right me-2"></i>Sign In
+        </button>
+    </div>
+</form>
+{% endblock %}
+

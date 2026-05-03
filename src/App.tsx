@@ -15,8 +15,8 @@ import Kernel from './pages/Kernel';
 import Appointments from './pages/Appointments';
 import Clinic from './pages/Clinic';
 import Admin from './pages/Admin';
+import Accounts from './pages/Accounts';
 import Profile from './pages/Profile';
-
 function PrivateRoute({ children, roles }: { children: React.ReactNode, roles?: string[] }) {
   const { user, profile, loading } = useAuth();
 
@@ -92,7 +92,7 @@ export default function App() {
             <PrivateRoute roles={['admin']}><Admin /></PrivateRoute>
           } />
           
-          {/* Shared Routes */}
+           {/* Shared Routes */}
           <Route path="/appointments" element={
             <PrivateRoute roles={['patient', 'therapist']}><Appointments /></PrivateRoute>
           } />
@@ -105,7 +105,10 @@ export default function App() {
           <Route path="/profile/password" element={
             <PrivateRoute><Profile /></PrivateRoute>
           } />
-          
+          <Route path="/accounts" element={
+            <PrivateRoute><Accounts /></PrivateRoute>
+          } />
+           
           {/* Default Route */}
           <Route path="/" element={<Navigate to="/dashboard" />} />
           <Route path="*" element={<Navigate to="/dashboard" />} />

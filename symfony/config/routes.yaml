@@ -1,0 +1,21 @@
+index:
+    path: /
+    controller: App\Controller\DashboardController::index
+
+login:
+    path: /login
+    controller: App\Controller\SecurityController::login
+
+logout:
+    path: /logout
+    methods: [GET]
+
+dashboard:
+    resource: ../src/Controller/
+    type: attribute
+
+api_platform:
+    resource: .
+    type: api_platform
+    prefix: /api
+
